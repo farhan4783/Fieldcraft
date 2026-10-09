@@ -61,3 +61,38 @@ test('selectCheckpoints selects correct count based on duration budget', () => {
   const cps20 = selectCheckpoints(candidates, 20);
   assert.equal(cps20.length, 3);
 });
+
+test('classifyPoi rejects access=customers and handles recreation ground', () => {
+  assert.equal(classifyPoi({ leisure: 'park', access: 'customers' }), null);
+  assert.equal(classifyPoi({ leisure: 'recreation_ground' }), 'public recreation ground');
+});
+
+test('selectCheckpoints guarantees strictly ascending distance ordering', () => {
+  const unsorted = [
+    { id: '1', name: 'Far Library', category: 'public library', distanceFromOriginMeters: 750, latitude: 1, longitude: 1 },
+    { id: '2', name: 'Close Park', category: 'public park', distanceFromOriginMeters: 150, latitude: 2, longitude: 2 },
+    { id: '3', name: 'Mid Square', category: 'public square', distanceFromOriginMeters: 400, latitude: 3, longitude: 3 },
+  ];
+
+  const cps = selectCheckpoints(unsorted, 20);
+  assert.equal(cps.length, 3);
+  assert.equal(cps[0].name, 'Close Park');
+  assert.equal(cps[1].name, 'Mid Square');
+  assert.equal(cps[2].name, 'Far Library');
+  assert.ok(cps[0].distanceFromOriginMeters < cps[1].distanceFromOriginMeters);
+  assert.ok(cps[1].distanceFromOriginMeters < cps[2].distanceFromOriginMeters);
+});
+
+test('filterAndNormalizePois deduplicates POIs closer than 40m', () => {
+  const originLat = 37.7749;
+  const originLon = -122.4194;
+
+  const raw = [
+    { id: 1, lat: 37.7760, lon: -122.4180, tags: { leisure: 'park', name: 'Park North' } },
+    // Only ~10m from item 1
+    { id: 2, lat: 37.77605, lon: -122.41805, tags: { leisure: 'park', name: 'Park North Pavilion' } },
+  ];
+
+  const results = filterAndNormalizePois(raw, originLat, originLon, 1500);
+  assert.equal(results.length, 1);
+});

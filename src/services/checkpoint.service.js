@@ -53,6 +53,9 @@ function selectCheckpoints(candidatePois, durationMinutes = 20) {
     }
   }
 
+  // Sort selected checkpoints by distance from origin to ensure natural walking sequence
+  selected.sort((a, b) => a.distanceFromOriginMeters - b.distanceFromOriginMeters);
+
   // Format into standard Checkpoint objects
   return selected.map((poi, idx) => ({
     id: `cp-${idx + 1}`,

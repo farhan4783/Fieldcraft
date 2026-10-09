@@ -58,3 +58,49 @@ test('POST /api/adventures in demo mode generates a valid full adventure', async
   assert.ok(adv.checkpoints[0].clue);
   assert.ok(adv.checkpoints[0].arrivalLine);
 });
+
+test('POST /api/adventures rejects invalid tone or duration', async () => {
+  const badToneRes = await testRequest('/api/adventures', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      durationMinutes: 20,
+      tone: 'horror-action',
+      demoMode: true,
+    }),
+  });
+  assert.equal(badToneRes.status, 400);
+  assert.equal(badToneRes.data.code, 'INVALID_TONE');
+
+  const badDurationRes = await testRequest('/api/adventures', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      durationMinutes: 99,
+      tone: 'mystery',
+      demoMode: true,
+    }),
+  });
+  assert.equal(badDurationRes.status, 400);
+  assert.equal(badDurationRes.data.code, 'INVALID_DURATION');
+});
+
+test('POST /api/adventures rejects live request with missing coordinates', async () => {
+  const res = await testRequest('/api/adventures', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      durationMinutes: 20,
+      tone: 'mystery',
+      demoMode: false,
+    }),
+  });
+  assert.equal(res.status, 400);
+  assert.equal(res.data.code, 'INVALID_COORDINATES');
+});
+
+test('GET /api/pois rejects invalid coordinates', async () => {
+  const res = await testRequest('/api/pois?lat=999&lon=-122');
+  assert.equal(res.status, 400);
+  assert.equal(res.data.code, 'INVALID_COORDINATES');
+});

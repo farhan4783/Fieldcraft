@@ -168,9 +168,13 @@ class WalkEngine {
   }
 
   /**
-   * Advance to next checkpoint directly (used in demo simulation)
+   * Advance to next checkpoint directly (used in demo simulation only)
    */
   simulateArrival() {
+    if (!this.adventure || this.adventure.mode !== 'demo') {
+      console.warn('Arrival simulation is only available in demo mode.');
+      return;
+    }
     const activeCp = this.getActiveCheckpoint();
     if (!activeCp) return;
     this.triggerArrival(activeCp);
@@ -210,12 +214,18 @@ class WalkEngine {
   }
 
   endEarly() {
-    this.clearIntervals();
     if (this.callbacks.onWalkEndedEarly) {
       this.callbacks.onWalkEndedEarly({
         elapsedSeconds: this.elapsedSeconds,
         completedCount: this.currentCheckpointIndex,
       });
+    }
+  }
+
+  forceEnd() {
+    this.clearIntervals();
+    if (window.AudioManager) {
+      window.AudioManager.stop();
     }
   }
 

@@ -107,8 +107,12 @@ document.addEventListener('DOMContentLoaded', () => {
       renderBriefing(currentAdventure);
       showView('briefing');
     } catch (err) {
-      alert(`Adventure Creation: ${err.message}`);
-      showView('landing');
+      const switchDemo = confirm(`Adventure Creation Notice: ${err.message}\n\nWould you like to try Demo Mode instead?`);
+      if (switchDemo) {
+        createAdventure(null, true);
+      } else {
+        showView('landing');
+      }
     }
   }
 
@@ -228,11 +232,17 @@ document.addEventListener('DOMContentLoaded', () => {
     window.AudioManager.speak(checkpoint.arrivalLine);
 
     const continueBtn = document.getElementById('btn-arrival-continue');
+    continueBtn.innerHTML = isLast
+      ? 'See Case Resolution &rarr;'
+      : 'Next Clue &rarr;';
+
     continueBtn.onclick = () => {
-      showView('walk');
       proceedNext();
-      if (!isLast && activeCheckpoint) {
-        window.AudioManager.speak(activeCheckpoint.clue);
+      if (!isLast) {
+        showView('walk');
+        if (activeCheckpoint) {
+          window.AudioManager.speak(activeCheckpoint.clue);
+        }
       }
     };
   }
@@ -285,6 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleWalkEndedEarly(stats) {
     const confirmExit = confirm('Are you sure you want to end this adventure early?');
     if (confirmExit) {
+      window.AudioManager.stop();
+      window.WalkEngine.forceEnd();
       showView('landing');
     }
   }
@@ -347,11 +359,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // New adventure from finale
   document.getElementById('btn-finale-new-adv').addEventListener('click', () => {
+    window.AudioManager.stop();
+    window.WalkEngine.forceEnd();
+    const refl = document.getElementById('finale-reflection-input');
+    if (refl) refl.value = '';
     showView('landing');
   });
 
   // Open Journal View
   document.getElementById('btn-open-journal').addEventListener('click', () => {
+    if (views.walk && views.walk.classList.contains('active')) {
+      alert('A walk is currently in progress. Please pause or finish your adventure before opening the journal.');
+      return;
+    }
     renderJournalList();
     showView('journal');
   });

@@ -68,3 +68,18 @@ test('evaluateGpsReading requires multiple qualifying readings before unlocking'
   assert.equal(step2.consecutiveHits, 2);
   assert.equal(step2.reason, 'ARRIVAL_CONFIRMED');
 });
+
+test('evaluateGpsReading handles invalid or missing coordinate data safely', () => {
+  const cp = { latitude: 37.7749, longitude: -122.4194, arrivalRadiusMeters: 90 };
+
+  const badReading1 = null;
+  assert.equal(evaluateGpsReading(cp, badReading1, 0).reason, 'INVALID_READING');
+
+  const badReading2 = { latitude: 'invalid', longitude: -122.4194 };
+  assert.equal(evaluateGpsReading(cp, badReading2, 0).reason, 'INVALID_READING');
+});
+
+test('terminal states (COMPLETED, ENDED) do not transition further', () => {
+  assert.equal(transitionState(STATES.COMPLETED, 'ANY_EVENT'), STATES.COMPLETED);
+  assert.equal(transitionState(STATES.ENDED, 'ANY_EVENT'), STATES.ENDED);
+});

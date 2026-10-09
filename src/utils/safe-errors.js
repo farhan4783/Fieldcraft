@@ -18,10 +18,12 @@ class AppError extends Error {
 function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-vars
   const isDev = process.env.NODE_ENV === 'development';
   const statusCode = err.statusCode || 500;
+  const isAppError = err instanceof AppError;
 
-  // In production, mask 500 errors to avoid leaking internals
+  // In production, mask unhandled 500+ errors to avoid leaking internals,
+  // but allow authored AppError messages (e.g. Overpass unavailable with demo suggestion)
   const safeMessage =
-    statusCode >= 500 && !isDev
+    statusCode >= 500 && !isDev && !isAppError
       ? 'An unexpected error occurred. Please try again or switch to demo mode.'
       : err.message || 'Unknown error occurred.';
 

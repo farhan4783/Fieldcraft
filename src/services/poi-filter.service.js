@@ -29,21 +29,35 @@ const FORBIDDEN_TAG_KEYS = [
   'landuse=industrial',
   'access=private',
   'access=no',
+  'access=customers',
   'railway',
 ];
 
 /**
  * Determine display category from OSM tags.
+ * Returns null if the POI matches any forbidden tag or is not in the whitelist.
  */
 function classifyPoi(tags = {}) {
-  for (const [forbidden] of FORBIDDEN_TAG_KEYS.map(k => k.split('='))) {
-    if (tags[forbidden] === 'private' || tags[forbidden] === 'no') {
-      return null;
+  // Check every forbidden pattern against the actual tags
+  for (const pattern of FORBIDDEN_TAG_KEYS) {
+    if (pattern.includes('=')) {
+      // key=value pattern: check exact match
+      const [key, value] = pattern.split('=');
+      if (tags[key] === value) {
+        return null;
+      }
+    } else {
+      // standalone key pattern (e.g. 'military', 'railway'):
+      // reject if tag key exists at all
+      if (tags[pattern] !== undefined) {
+        return null;
+      }
     }
   }
 
   if (tags.leisure === 'park') return 'public park';
   if (tags.leisure === 'garden') return 'public garden';
+  if (tags.leisure === 'recreation_ground') return 'public recreation ground';
   if (tags.place === 'square' || tags.place === 'plaza') return 'public square';
   if (tags.amenity === 'library') return 'public library';
   if (tags.amenity === 'fountain') return 'public fountain';

@@ -99,19 +99,25 @@ Tone: ${tone}. Remember: exact IDs, strict JSON only.`;
 }
 
 /**
- * Strip potential Markdown code blocks or wrapping whitespace.
+ * Strip potential Markdown code blocks or wrapping commentary to extract the pure JSON object.
  */
 function cleanJsonString(str) {
-  if (!str) return '{}';
+  if (!str || typeof str !== 'string') return '{}';
   let cleaned = str.trim();
-  if (cleaned.startsWith('```json')) {
-    cleaned = cleaned.slice(7);
-  } else if (cleaned.startsWith('```')) {
-    cleaned = cleaned.slice(3);
+
+  // If enclosed in a markdown code fence anywhere in the string, extract the fence contents
+  const codeBlockMatch = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (codeBlockMatch) {
+    cleaned = codeBlockMatch[1].trim();
   }
-  if (cleaned.endsWith('```')) {
-    cleaned = cleaned.slice(0, -3);
+
+  // Extract from the first '{' to the last '}'
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
   }
+
   return cleaned.trim();
 }
 

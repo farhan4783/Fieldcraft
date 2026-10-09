@@ -1197,4 +1197,60 @@ body {
   .walk-clue-text {
     font-size: 1.25rem;
   }
+  .briefing-title {
+    font-size: 1.5rem;
+  }
+  .arrival-heading {
+    font-size: 1.6rem;
+  }
+  .walk-stats-grid {
+    gap: 0.5rem;
+  }
+  .stat-number {
+    font-size: 1.1rem;
+  }
+}
+
+/* Keyboard focus indicators (Plan §13: visible focus indicators) */
+*:focus-visible {
+  outline: 2px solid var(--moss-glow);
+  outline-offset: 2px;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--amber-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(229, 169, 59, 0.2);
+}
+
+.duration-pill:focus-visible,
+.tone-card:focus-visible {
+  outline: 2px solid var(--moss-glow);
+  outline-offset: 2px;
+}
+
+/* GPS badge error state */
+.gps-badge.error {
+  background: rgba(217, 83, 79, 0.15);
+  border-color: var(--danger-accent);
+  color: var(--danger-accent);
+}
+
+/* Reduced-motion support (Plan §13: reduced-motion support) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .radar-sweep { animation: none; }
+  .radar-dot { animation: none; opacity: 1; }
+  .loading-bar-fill { animation: none; transform: translateX(0); }
+  .audio-waveform.active span { animation: none; height: 12px; }
+
+  .view.active {
+    animation: none;
+  }
 }

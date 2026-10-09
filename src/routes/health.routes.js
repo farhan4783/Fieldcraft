@@ -13,7 +13,6 @@ router.get('/', async (req, res) => {
     ollamaAvailable: ollamaStatus.available,
     ollamaVersion: ollamaStatus.version,
     modelConfigured: config.ollama.model,
-    mode: config.nodeEnv,
   });
 });
 
