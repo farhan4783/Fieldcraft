@@ -1,0 +1,47 @@
+[
+  {
+    "id": "demo-poi-1",
+    "name": "Old Oak Public Common",
+    "category": "park",
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "tags": {
+      "leisure": "park",
+      "name": "Old Oak Public Common"
+    }
+  },
+  {
+    "id": "demo-poi-2",
+    "name": "Town Square Sundial",
+    "category": "artwork",
+    "latitude": 37.7758,
+    "longitude": -122.4182,
+    "tags": {
+      "tourism": "artwork",
+      "artwork_type": "sundial",
+      "name": "Town Square Sundial"
+    }
+  },
+  {
+    "id": "demo-poi-3",
+    "name": "Central Municipal Library Forecourt",
+    "category": "library",
+    "latitude": 37.7766,
+    "longitude": -122.4168,
+    "tags": {
+      "amenity": "library",
+      "name": "Central Municipal Library Forecourt"
+    }
+  },
+  {
+    "id": "demo-poi-4",
+    "name": "Founders Memorial Fountain",
+    "category": "fountain",
+    "latitude": 37.7772,
+    "longitude": -122.4155,
+    "tags": {
+      "amenity": "fountain",
+      "name": "Founders Memorial Fountain"
+    }
+  }
+]

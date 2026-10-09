@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FIELDCRAFT — Real-World Audio Mystery Walk</title>
+  <meta name="description" content="An open-source AI game master that turns your neighborhood into a real-world mystery. The story advances only when you walk outside.">
+  <meta name="theme-color" content="#0d1310">
+
+  <!-- Google Fonts: Editorial Serif + Clean Modern Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="noise-overlay"></div>
+
+  <!-- Header Nav -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-compass">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">FIELDCRAFT</h1>
+        <span class="brand-sub">The walking mystery engine</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div id="system-status-indicator" class="status-badge" title="Detecting AI status...">
+        <span class="status-dot"></span> Checking AI
+      </div>
+      <button id="btn-open-journal" class="btn-icon" title="View Field Journal" aria-label="View Journal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="app-viewport">
+    <!-- VIEW 1: LANDING & SETUP -->
+    <section id="view-landing" class="view active">
+      <div class="hero-section">
+        <div class="hero-tag">HACKTOBERFEST 2026 • TOUCH GRASS</div>
+        <h2 class="hero-headline">A mystery is waiting outside.<br>The story advances when you do.</h2>
+        <p class="hero-description">
+          Put your phone away and step into the open air. Gemma AI transforms real nearby public spaces into an audio-led fictional case—unlocked only by your physical footsteps.
+        </p>
+      </div>
+
+      <div class="case-config-card">
+        <div class="config-section">
+          <label class="config-label">1. CHOOSE WALK DURATION</label>
+          <div class="duration-selector" role="radiogroup">
+            <button class="duration-pill" data-duration="10" id="duration-10">10 Min <span>~500m</span></button>
+            <button class="duration-pill selected" data-duration="20" id="duration-20">20 Min <span>~1.0km</span></button>
+            <button class="duration-pill" data-duration="30" id="duration-30">30 Min <span>~1.5km</span></button>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <label class="config-label">2. CHOOSE INVESTIGATIVE TONE</label>
+          <div class="tone-selector">
+            <div class="tone-card selected" data-tone="mystery" id="tone-mystery">
+              <div class="tone-icon">🔍</div>
+              <div class="tone-content">
+                <strong>Mystery & Noir</strong>
+                <span>Ciphers, vanished cartographers, enigmatic archives</span>
+              </div>
+            </div>
+            <div class="tone-card" data-tone="wonder" id="tone-wonder">
+              <div class="tone-icon">🌿</div>
+              <div class="tone-content">
+                <strong>Wonder & Nature</strong>
+                <span>Living canopies, celestial echoes, sensory presence</span>
+              </div>
+            </div>
+            <div class="tone-card" data-tone="playful" id="tone-playful">
+              <div class="tone-icon">🦊</div>
+              <div class="tone-content">
+                <strong>Playful Detective</strong>
+                <span>Mischievous critters, runaway gadgets, witty scavenger hunt</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-stack">
+          <button id="btn-create-live" class="btn btn-primary btn-large">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg">
+              <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            Create My Mystery (Walk Outside)
+          </button>
+          <button id="btn-create-demo" class="btn btn-secondary">
+            ⚡ Try a Demo (Simulate on Desktop / Review)
+          </button>
+        </div>
+
+        <div class="privacy-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span><strong>Local-first privacy:</strong> AI runs locally. Exact location coordinates are never saved, tracked, or sent to commercial AI cloud APIs.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: GENERATING STATE -->
+    <section id="view-generating" class="view">
+      <div class="generating-card">
+        <div class="radar-scanner">
+          <div class="radar-circle circle-1"></div>
+          <div class="radar-circle circle-2"></div>
+          <div class="radar-circle circle-3"></div>
+          <div class="radar-sweep"></div>
+          <div class="radar-dot dot-1"></div>
+          <div class="radar-dot dot-2"></div>
+        </div>
+        <h3 class="generating-title">Charting Your Mystery</h3>
+        <p id="generating-subtext" class="generating-subtext">Consulting OpenStreetMap and prompting local Gemma engine...</p>
+        <div class="loading-bar-track">
+          <div class="loading-bar-fill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: CASE BRIEFING -->
+    <section id="view-briefing" class="view">
+      <div class="briefing-card">
+        <div class="case-file-header">
+          <span class="case-tag" id="briefing-tone">MYSTERY</span>
+          <span class="case-tag outline" id="briefing-duration">20 MIN</span>
+          <span class="case-tag engine" id="briefing-source">Gemma 3 AI</span>
+        </div>
+
+        <h2 id="briefing-title" class="briefing-title">Case 001: The Whispering Stone</h2>
+        <div class="briefing-divider"></div>
+
+        <div class="briefing-section">
+          <h4>CASE PREMISE</h4>
+          <p id="briefing-premise" class="briefing-premise">Loading case file...</p>
+        </div>
+
+        <div class="briefing-section">
+          <h4>VERIFIED PUBLIC CHECKPOINTS</h4>
+          <ul id="briefing-checkpoints-list" class="briefing-checkpoints-list"></ul>
+        </div>
+
+        <div class="safety-advisory">
+          <div class="safety-icon">⚠️</div>
+          <div class="safety-copy">
+            <strong>Field Safety Reminder:</strong>
+            <p>Always stay mindful of your surroundings. Never cross roads while looking at the screen, and stop in a safe spot before checking clues. All checkpoints are in public, accessible areas.</p>
+          </div>
+        </div>
+
+        <button id="btn-begin-walk" class="btn btn-primary btn-large">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Begin Walk (Start Audio)
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 4: ACTIVE FIELD / WALK MODE -->
+    <section id="view-walk" class="view">
+      <div id="demo-mode-badge" class="demo-strip hidden">
+        <span>⚠️ SIMULATED DEMO — Location is simulated for judging review</span>
+      </div>
+
+      <div class="field-hud">
+        <div class="hud-item">
+          <span class="hud-label">TARGET</span>
+          <span id="walk-progress-label" class="hud-value">Checkpoint 1 of 3</span>
+        </div>
+        <div class="hud-item right">
+          <span class="hud-label">ELAPSED</span>
+          <span id="walk-timer" class="hud-value timer-font">00:00</span>
+        </div>
+      </div>
+
+      <div class="clue-canvas">
+        <div class="clue-envelope">
+          <div class="envelope-top-bar">
+            <span class="clue-badge">ACTIVE CLUE</span>
+            <div id="audio-waveform" class="audio-waveform" title="Narrating Clue">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <div class="clue-text-body">
+            <p id="walk-clue-text" class="walk-clue-text">Listen closely to the audio transmission...</p>
+          </div>
+
+          <div class="clue-controls">
+            <button id="btn-replay-clue" class="btn btn-glass" title="Replay Clue Narration">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              Replay Audio
+            </button>
+            <button id="btn-show-hint" class="btn btn-text">Need a hint?</button>
+          </div>
+
+          <div id="walk-hint-box" class="hint-card hidden">
+            <span class="hint-label">DIRECT INTEL:</span>
+            <p id="walk-hint-text" class="hint-text"></p>
+          </div>
+        </div>
+
+        <div id="walk-gps-status" class="gps-telemetry">
+          <span class="gps-badge">Scanning proximity...</span>
+        </div>
+
+        <!-- Simulation button (Active only in Demo mode) -->
+        <div id="demo-simulation-panel" class="demo-controls-panel hidden">
+          <button id="btn-demo-simulate" class="btn btn-amber">
+            ⚡ Simulate Arrival at Checkpoint
+          </button>
+        </div>
+      </div>
+
+      <div class="field-actions">
+        <button id="btn-pause-walk" class="btn btn-secondary">Pause Walk</button>
+        <button id="btn-end-walk" class="btn btn-danger-text">End Walk</button>
+      </div>
+    </section>
+
+    <!-- VIEW 5: ARRIVAL CELEBRATION -->
+    <section id="view-arrival" class="view">
+      <div class="arrival-card">
+        <div class="arrival-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <h2 id="arrival-title" class="arrival-heading">Checkpoint Decoded!</h2>
+        <div class="arrival-divider"></div>
+        <p id="arrival-line-text" class="arrival-quote">You have reached the destination.</p>
+
+        <button id="btn-arrival-continue" class="btn btn-primary btn-large">
+          Next Clue &rarr;
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 6: FINALE & JOURNAL -->
+    <section id="view-finale" class="view">
+      <div class="finale-card">
+        <div class="finale-badge">CASE SOLVED</div>
+        <h2 id="finale-case-title" class="finale-title">The Mystery Complete</h2>
+        <p id="finale-story-text" class="finale-story"></p>
+
+        <div class="walk-stats-grid">
+          <div class="stat-box">
+            <span class="stat-number" id="finale-stat-time">22 min</span>
+            <span class="stat-label">Time Walked</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="finale-stat-checkpoints">3 / 3</span>
+            <span class="stat-label">Checkpoints</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="finale-stat-mode">LIVE</span>
+            <span class="stat-label">Session Mode</span>
+          </div>
+        </div>
+
+        <div class="reflection-box">
+          <label for="finale-reflection-input" class="reflection-label">ADD YOUR FIELD NOTES</label>
+          <textarea id="finale-reflection-input" placeholder="Record your observations from the real world... What did you notice on your walk?" rows="3"></textarea>
+        </div>
+
+        <div class="action-stack">
+          <button id="btn-save-journal" class="btn btn-primary">
+            Save Field Note to Journal
+          </button>
+          <button id="btn-finale-new-adv" class="btn btn-secondary">
+            Start Another Mystery
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 7: SAVED JOURNAL ARCHIVE -->
+    <section id="view-journal" class="view">
+      <div class="journal-view-card">
+        <div class="journal-header">
+          <div>
+            <h2>Investigator's Journal</h2>
+            <p>Past mystery walks saved to this device</p>
+          </div>
+          <button id="btn-journal-back" class="btn btn-secondary">&larr; Back</button>
+        </div>
+
+        <div id="journal-entries-container" class="journal-entries-list"></div>
+
+        <div class="journal-footer">
+          <button id="btn-clear-journal" class="btn btn-text btn-danger-text">Clear History</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Persistent Attribution Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <span>FIELDCRAFT &copy; 2026. Built with local <a href="https://ollama.com/library/gemma3" target="_blank" rel="noopener">Gemma 3</a> &amp; map data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>.</span>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="storage.js"></script>
+  <script src="audio.js"></script>
+  <script src="demo.js"></script>
+  <script src="walk.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
