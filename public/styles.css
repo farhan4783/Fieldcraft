@@ -1181,33 +1181,58 @@ body {
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
+  .app-header {
+    padding: 0.75rem 1rem;
+  }
+  .brand-title {
+    font-size: 1.15rem;
+  }
+  .brand-sub {
+    font-size: 0.62rem;
+  }
+  .app-viewport {
+    padding: 1rem 0.85rem 3rem;
+  }
   .hero-headline {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
+  }
+  .hero-description {
+    font-size: 0.88rem;
   }
   .case-config-card {
-    padding: 1.25rem 1rem;
+    padding: 1.25rem 0.95rem;
   }
   .duration-selector {
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
   .duration-pill {
-    padding: 0.65rem 0.25rem;
-    font-size: 0.85rem;
+    padding: 0.65rem 0.2rem;
+    font-size: 0.82rem;
+  }
+  .tone-card {
+    padding: 0.75rem 0.85rem;
   }
   .walk-clue-text {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+    line-height: 1.45;
   }
   .briefing-title {
-    font-size: 1.5rem;
+    font-size: 1.45rem;
   }
   .arrival-heading {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
   .walk-stats-grid {
-    gap: 0.5rem;
+    gap: 0.45rem;
   }
   .stat-number {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
+  }
+  .modal-card {
+    max-width: calc(100vw - 1.5rem);
+  }
+  .search-input-wrapper input {
+    font-size: 0.82rem;
   }
 }
 

@@ -4,6 +4,13 @@ const { AppError } = require('../utils/safe-errors');
 // In-memory cache for Overpass responses: key -> { timestamp, data }
 const cache = new Map();
 
+// Known public Overpass mirror endpoints for resilient fallback
+const OVERPASS_ENDPOINTS = [
+  config.overpass.url,
+  'https://lz4.overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+];
+
 /**
  * Generate coarse spatial cache key (approx 500m precision).
  */
@@ -39,7 +46,7 @@ function buildOverpassQuery(lat, lon, radiusMeters) {
 }
 
 /**
- * Fetch public POIs from Overpass API.
+ * Fetch public POIs from Overpass API with mirror fallback.
  * @param {number} lat
  * @param {number} lon
  * @param {number} radiusMeters
@@ -56,48 +63,52 @@ async function fetchOverpassPois(lat, lon, radiusMeters = 1000) {
   }
 
   const query = buildOverpassQuery(lat, lon, boundedRadius);
+  let lastError = null;
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), config.overpass.timeoutMs);
+  for (const endpoint of OVERPASS_ENDPOINTS) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), config.overpass.timeoutMs);
 
-  try {
-    const response = await fetch(config.overpass.url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'Fieldcraft/0.1 (Hacktoberfest 2026; touch-grass)',
-      },
-      body: `data=${encodeURIComponent(query)}`,
-      signal: controller.signal,
-    });
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'Fieldcraft/0.1 (Hacktoberfest 2026; touch-grass)',
+        },
+        body: `data=${encodeURIComponent(query)}`,
+        signal: controller.signal,
+      });
 
-    clearTimeout(timeoutId);
+      clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      throw new AppError(
-        `Overpass query failed with status ${response.status}`,
-        502,
-        'OVERPASS_ERROR'
-      );
+      if (!response.ok) {
+        lastError = new AppError(`Overpass endpoint ${endpoint} failed with status ${response.status}`, 502, 'OVERPASS_ERROR');
+        continue; // Try next mirror
+      }
+
+      const data = await response.json();
+      const elements = data.elements || [];
+
+      // Store in cache
+      cache.set(cacheKey, {
+        timestamp: Date.now(),
+        data: elements,
+      });
+
+      return elements;
+    } catch (err) {
+      clearTimeout(timeoutId);
+      lastError = err;
+      // Continue to next mirror if available
     }
-
-    const data = await response.json();
-    const elements = data.elements || [];
-
-    // Store in cache
-    cache.set(cacheKey, {
-      timestamp: Date.now(),
-      data: elements,
-    });
-
-    return elements;
-  } catch (err) {
-    clearTimeout(timeoutId);
-    if (err.name === 'AbortError') {
-      throw new AppError('Overpass request timed out.', 504, 'OVERPASS_TIMEOUT');
-    }
-    throw err;
   }
+
+  if (lastError && lastError.name === 'AbortError') {
+    throw new AppError('Overpass request timed out across mirrors.', 504, 'OVERPASS_TIMEOUT');
+  }
+
+  throw lastError || new AppError('Overpass mirrors unavailable.', 502, 'OVERPASS_ERROR');
 }
 
 /**

@@ -554,8 +554,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('finale-story-text').textContent = currentAdventure.finale;
 
     const mins = Math.max(1, Math.round(stats.elapsedSeconds / 60));
-    document.getElementById('finale-stat-time').textContent = `${mins} min`;
-    document.getElementById('finale-stat-checkpoints').textContent = `${stats.completedCount} / ${stats.completedCount}`;
+    const totalCheckpoints = currentAdventure?.checkpoints?.length || stats.completedCount;
+    document.getElementById('finale-stat-checkpoints').textContent = `${stats.completedCount} / ${totalCheckpoints}`;
     document.getElementById('finale-stat-mode').textContent = currentAdventure.mode.toUpperCase();
 
     // Narrate finale resolution
