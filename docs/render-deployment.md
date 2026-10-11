@@ -48,7 +48,7 @@ If you prefer configuring manually in the Render dashboard:
 
 Render free instances run in a container with 512MB RAM without GPU, meaning you cannot run a local 4GB Ollama weights file directly on Render.
 
-For the **Hacktoberfest Open-Source AI Challenge**, FIELDCRAFT provides two compliant deployment paths:
+For the **Hacktoberfest Open-Source AI Challenge**, FIELDCRAFT provides two compliant deployment paths: 
 
 ### 1. Free Remote Open-Weight Gemma 3 via OpenRouter (Recommended)
 You can run Google's newest open-weight **Gemma 3 4B** (`google/gemma-3-4b-it:free`) via OpenRouter:
