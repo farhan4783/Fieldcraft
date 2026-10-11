@@ -66,10 +66,9 @@ router.post('/', async (req, res, next) => {
     // Client-supplied AI options (if user entered a key in UI)
     const customAiOpts = {
       groqApiKey: req.headers['x-groq-key'] || req.body?.groqApiKey,
-      geminiApiKey: req.headers['x-gemini-key'] || req.body?.geminiApiKey,
     };
 
-    // Generate story from Cloud Gemma, Gemini, Local Ollama, or Fallback
+    // Generate story from Local Ollama (Gemma), Remote Open-Weight Gemma, or Deterministic Fallback
     const { story, source, model } = await generateStory(selectedCps, tone, durationMinutes, customAiOpts);
 
     // Merge story clues into selected checkpoints

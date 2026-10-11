@@ -375,12 +375,12 @@
   <div id="ai-settings-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 id="ai-modal-title">🤖 AI Engine Setup</h3>
+        <h3 id="ai-modal-title">🤖 Open-Source AI Engine</h3>
         <button id="btn-close-ai-modal" class="btn-icon" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
         <p class="modal-desc">
-          FIELDCRAFT generates customized mysteries using open-weight AI. If Ollama is not installed locally, you can use <strong>free Cloud Gemma via Groq</strong> or <strong>Google Gemini</strong>!
+          FIELDCRAFT is powered by <strong>Google Gemma open-weight models</strong>. For 100% privacy and zero cloud calls, run <code>ollama run gemma3:4b</code> locally. If you're on a mobile browser or machine without Ollama, you can connect a free open-weight Gemma runner!
         </p>
         <div class="current-ai-badge" id="modal-current-ai-badge">
           Current Engine: Detecting...
@@ -388,20 +388,15 @@
 
         <div class="form-group">
           <label for="input-groq-key">
-            <strong>Groq API Key (Recommended for Gemma):</strong>
+            <strong>Remote Gemma Key (Free Open-Weights Runner):</strong>
             <span class="label-tag free">100% Free</span>
           </label>
           <input type="password" id="input-groq-key" placeholder="gsk_... (from console.groq.com)">
-          <small>Runs Google's open-weight <code>gemma2-9b-it</code> in the cloud at 500+ tokens/sec. Takes 30 seconds to get a free key!</small>
+          <small>Runs open-weight <code>gemma2-9b-it</code> in the cloud at 500+ tokens/sec. Zero cost, no credit card required.</small>
         </div>
 
-        <div class="form-group">
-          <label for="input-gemini-key">
-            <strong>Google Gemini API Key (Alternative):</strong>
-            <span class="label-tag free">Free Tier</span>
-          </label>
-          <input type="password" id="input-gemini-key" placeholder="AIza... (from aistudio.google.com)">
-          <small>Runs Google Gemini Flash directly from Google AI Studio.</small>
+        <div class="modal-note-box">
+          <small>🌿 <strong>Offline / Zero-Config:</strong> If no key is set and Ollama is offline, FIELDCRAFT automatically switches to its built-in deterministic story engine so your walk is never interrupted.</small>
         </div>
 
         <div class="modal-actions">

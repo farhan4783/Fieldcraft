@@ -1,27 +1,31 @@
 const config = require('../config');
-const { checkOllamaAvailability } = require('./ollama.service');
+const { checkOllamaAvailability, callOllama } = require('./ollama.service');
 
 /**
  * Detect which AI engine is active and available.
- * Checks Groq (Gemma), Google Gemini, OpenRouter, Local Ollama, or Fallback.
+ * Prioritizes Local Open-Weight Gemma (Ollama), then Remote Gemma (Open-Weights), then Deterministic Fallback.
  */
 async function getAiStatus() {
+  // 1. Prioritize Local Open-Weight Gemma via Ollama (Core Hackathon Path)
+  const ollama = await checkOllamaAvailability();
+  if (ollama.available) {
+    return {
+      available: true,
+      provider: 'ollama',
+      model: config.ollama.model,
+      label: `Local Gemma (${config.ollama.model} via Ollama)`,
+      version: ollama.version,
+      cloud: false,
+    };
+  }
+
+  // 2. Open-Weight Gemma remote runner (e.g. for Render or machines without Ollama)
   if (config.ai.groqApiKey) {
     return {
       available: true,
       provider: 'groq',
       model: config.ai.groqModel,
-      label: `Cloud Gemma (${config.ai.groqModel} via Groq)`,
-      cloud: true,
-    };
-  }
-
-  if (config.ai.geminiApiKey) {
-    return {
-      available: true,
-      provider: 'gemini',
-      model: config.ai.geminiModel,
-      label: `Google Gemini (${config.ai.geminiModel})`,
+      label: `Remote Gemma (${config.ai.groqModel} Open-Weights)`,
       cloud: true,
     };
   }
@@ -31,36 +35,24 @@ async function getAiStatus() {
       available: true,
       provider: 'openrouter',
       model: config.ai.openrouterModel,
-      label: `OpenRouter (${config.ai.openrouterModel})`,
+      label: `Remote Gemma (${config.ai.openrouterModel})`,
       cloud: true,
     };
   }
 
-  // Check local Ollama
-  const ollama = await checkOllamaAvailability();
-  if (ollama.available) {
-    return {
-      available: true,
-      provider: 'ollama',
-      model: config.ollama.model,
-      label: `Local Gemma (${config.ollama.model})`,
-      version: ollama.version,
-      cloud: false,
-    };
-  }
-
-  // Deterministic engine fallback
+  // 3. Deterministic narrative engine fallback (Zero-dependency, offline)
   return {
     available: false,
     provider: 'deterministic',
     model: 'built-in-templates',
-    label: 'Deterministic Narrative Engine',
+    label: 'Deterministic Narrative Engine (Built-in Failsafe)',
     cloud: false,
   };
 }
 
 /**
- * Call Groq Cloud API (Free Gemma 2 open model).
+ * Call Groq Cloud API for Open-Weight Gemma 2 inference.
+ * Used for zero-RAM cloud deployments (like Render free tier).
  */
 async function callGroq(apiKey, model, systemPrompt, userPrompt, timeoutMs = 25000) {
   const controller = new AbortController();
@@ -101,52 +93,7 @@ async function callGroq(apiKey, model, systemPrompt, userPrompt, timeoutMs = 250
 }
 
 /**
- * Call Google Gemini API directly.
- */
-async function callGemini(apiKey, model, systemPrompt, userPrompt, timeoutMs = 25000) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const targetModel = model || 'gemini-2.5-flash';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`;
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.7,
-        },
-      }),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!res.ok) {
-      const errBody = await res.text().catch(() => '');
-      throw new Error(`Gemini API returned HTTP ${res.status}: ${errBody}`);
-    }
-
-    const data = await res.json();
-    const candidate = data.candidates?.[0];
-    const text = candidate?.content?.parts?.[0]?.text;
-    if (!text) {
-      throw new Error('Gemini API returned empty text');
-    }
-    return text;
-  } catch (err) {
-    clearTimeout(timeoutId);
-    throw err;
-  }
-}
-
-/**
- * Call OpenRouter API.
+ * Call OpenRouter API for Open-Weight Gemma inference.
  */
 async function callOpenRouter(apiKey, model, systemPrompt, userPrompt, timeoutMs = 25000) {
   const controller = new AbortController();
@@ -185,20 +132,22 @@ async function callOpenRouter(apiKey, model, systemPrompt, userPrompt, timeoutMs
 }
 
 /**
- * Master AI generator: routes prompt to the best available provider.
- * Supports optional client-provided API key from headers.
+ * Master AI generator: routes prompt to the best available open-weight provider.
+ * Prioritizes Local Ollama (Gemma), then remote Gemma runner if configured, or falls back.
  */
 async function callAi(systemPrompt, userPrompt, customOpts = {}) {
+  // Check if Ollama is available locally first (Gold-standard local open-weight path)
+  const ollamaStatus = await checkOllamaAvailability();
+  if (ollamaStatus.available && !customOpts.groqApiKey) {
+    const raw = await callOllama(systemPrompt, userPrompt);
+    return { content: raw, provider: 'ollama', model: config.ollama.model };
+  }
+
+  // If remote open-weight key provided by client or configured on server
   const groqKey = customOpts.groqApiKey || config.ai.groqApiKey;
   if (groqKey) {
     const raw = await callGroq(groqKey, config.ai.groqModel, systemPrompt, userPrompt, config.ai.timeoutMs);
     return { content: raw, provider: 'groq', model: config.ai.groqModel };
-  }
-
-  const geminiKey = customOpts.geminiApiKey || config.ai.geminiApiKey;
-  if (geminiKey) {
-    const raw = await callGemini(geminiKey, config.ai.geminiModel, systemPrompt, userPrompt, config.ai.timeoutMs);
-    return { content: raw, provider: 'gemini', model: config.ai.geminiModel };
   }
 
   const openrouterKey = customOpts.openrouterApiKey || config.ai.openrouterApiKey;
@@ -207,8 +156,7 @@ async function callAi(systemPrompt, userPrompt, customOpts = {}) {
     return { content: raw, provider: 'openrouter', model: config.ai.openrouterModel };
   }
 
-  // Attempt local Ollama
-  const { callOllama } = require('./ollama.service');
+  // Attempt local Ollama (will throw if offline, triggering deterministic fallback)
   const raw = await callOllama(systemPrompt, userPrompt);
   return { content: raw, provider: 'ollama', model: config.ollama.model };
 }
@@ -217,6 +165,5 @@ module.exports = {
   getAiStatus,
   callAi,
   callGroq,
-  callGemini,
   callOpenRouter,
 };

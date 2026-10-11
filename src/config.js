@@ -6,8 +6,6 @@ module.exports = {
   ai: {
     groqApiKey: process.env.GROQ_API_KEY || '',
     groqModel: process.env.GROQ_MODEL || 'gemma2-9b-it',
-    geminiApiKey: process.env.GEMINI_API_KEY || '',
-    geminiModel: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     openrouterApiKey: process.env.OPENROUTER_API_KEY || '',
     openrouterModel: process.env.OPENROUTER_MODEL || 'google/gemma-2-9b-it:free',
     timeoutMs: parseInt(process.env.AI_TIMEOUT_MS, 10) || 25000,

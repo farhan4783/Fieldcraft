@@ -22,7 +22,7 @@ This guide walks you through deploying **FIELDCRAFT** to [Render](https://render
    - **Build Command:** `npm install`
    - **Start Command:** `node server.js`
 5. Click **Apply**.
-6. (Optional for Cloud AI) Add your free **Groq** or **Gemini** API key in the Environment Variables tab (see Section 3 below).
+6. (Optional for Hosted Open-Weight AI) Add your free **Groq** API key (`gsk_...`) in the Environment Variables tab to run open-weight **Gemma 2** (`gemma2-9b-it`) in the cloud.
 
 ---
 
@@ -44,13 +44,14 @@ If you prefer configuring manually in the Render dashboard:
 
 ---
 
-## 🤖 Activating Cloud AI (Since Ollama is Local-Only)
+## 🤖 Open-Source AI in Cloud Hosting (Render)
 
-Render free instances run in a cloud container with 512MB RAM without GPU, meaning you cannot run a local Ollama daemon on Render directly.
+Render free instances run in a container with 512MB RAM without GPU, meaning you cannot run a local 4GB Ollama weights file directly on Render.
 
-FIELDCRAFT has built-in native support for **Cloud Gemma** and **Google Gemini**!
+For the **Hacktoberfest Open-Source AI Challenge**, FIELDCRAFT provides two compliant deployment paths:
 
-### Recommended: Free Cloud Gemma via Groq (Takes 30 seconds)
+### 1. Free Remote Open-Weight Gemma Runner (Recommended for Cloud)
+You can run Google's open-weight **`gemma2-9b-it`** model for free via Groq's high-speed inference engine:
 1. Go to [https://console.groq.com](https://console.groq.com) and create a free account (no credit card needed).
 2. Click **API Keys** &rarr; **Create API Key**. Copy your key (`gsk_...`).
 3. In your Render Dashboard &rarr; Go to your `fieldcraft` service &rarr; Click **Environment**.
@@ -58,14 +59,10 @@ FIELDCRAFT has built-in native support for **Cloud Gemma** and **Google Gemini**
    - **Key:** `GROQ_API_KEY`
    - **Value:** `gsk_your_groq_api_key`
 5. Click **Save Changes**.
-6. Render will automatically redeploy. FIELDCRAFT will now run Google's **`gemma2-9b-it`** model in the cloud at 500+ tokens/second!
+6. Render will redeploy automatically. FIELDCRAFT will now generate stories using open-weight **`gemma2-9b-it`** at 500+ tokens/second!
 
-### Alternative: Google Gemini API
-1. Get a free API key at [https://aistudio.google.com](https://aistudio.google.com).
-2. Add environment variable in Render:
-   - **Key:** `GEMINI_API_KEY`
-   - **Value:** `AIza_your_gemini_key`
-3. Click **Save Changes**.
+### 2. Built-in Deterministic Narrative Engine (Zero-Config Failsafe)
+If you deploy without any API keys, FIELDCRAFT automatically runs its procedural **Deterministic Narrative Engine**. It builds custom mysteries from OpenStreetMap landmarks with 0 API calls, 0 RAM overhead, and 100% uptime—allowing judges and reviewers to test the entire game loop seamlessly!
 
 ---
 
@@ -75,10 +72,10 @@ FIELDCRAFT has built-in native support for **Cloud Gemma** and **Google Gemini**
 |---|---|---|
 | `NODE_ENV` | `production` | Enables production error handling |
 | `PORT` | `10000` | Render assigns this automatically |
-| `GROQ_API_KEY` | `gsk_...` | *(Recommended)* Powers cloud Gemma 2 AI |
-| `GEMINI_API_KEY` | `AIza...` | *(Alternative)* Powers Google Gemini Flash AI |
+| `GROQ_API_KEY` | `gsk_...` | *(Optional)* Runs open-weight Gemma 2 (`gemma2-9b-it`) |
+| `OPENROUTER_API_KEY` | `sk-or-...` | *(Optional)* Alternative open-weight Gemma runner |
 
-> **Note:** If no cloud AI key is set and Ollama is not available, FIELDCRAFT automatically uses its built-in deterministic story engine. The platform **never crashes** and will always provide a complete, working mystery walk!
+> **Note:** FIELDCRAFT adheres strictly to open-weight models (Google Gemma). Proprietary closed APIs are excluded.
 
 ---
 

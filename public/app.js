@@ -273,11 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSaveAiKeys = document.getElementById('btn-save-ai-keys');
   const btnClearAiKeys = document.getElementById('btn-clear-ai-keys');
   const inputGroqKey = document.getElementById('input-groq-key');
-  const inputGeminiKey = document.getElementById('input-gemini-key');
 
-  // Load existing keys from session
+  // Load existing key from session
   if (inputGroqKey) inputGroqKey.value = sessionStorage.getItem('fieldcraft_groq_key') || '';
-  if (inputGeminiKey) inputGeminiKey.value = sessionStorage.getItem('fieldcraft_gemini_key') || '';
 
   function openAiModal() {
     if (aiModal) aiModal.classList.remove('hidden');
@@ -296,15 +294,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnSaveAiKeys) {
     btnSaveAiKeys.addEventListener('click', () => {
       const groqVal = (inputGroqKey?.value || '').trim();
-      const geminiVal = (inputGeminiKey?.value || '').trim();
 
       if (groqVal) sessionStorage.setItem('fieldcraft_groq_key', groqVal);
       else sessionStorage.removeItem('fieldcraft_groq_key');
 
-      if (geminiVal) sessionStorage.setItem('fieldcraft_gemini_key', geminiVal);
-      else sessionStorage.removeItem('fieldcraft_gemini_key');
-
-      alert('AI keys saved for this session!');
+      alert('Gemma AI key saved for this session!');
       closeAiModal();
       checkHealth();
     });
@@ -313,10 +307,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnClearAiKeys) {
     btnClearAiKeys.addEventListener('click', () => {
       sessionStorage.removeItem('fieldcraft_groq_key');
-      sessionStorage.removeItem('fieldcraft_gemini_key');
       if (inputGroqKey) inputGroqKey.value = '';
-      if (inputGeminiKey) inputGeminiKey.value = '';
-      alert('Session AI keys cleared.');
+      alert('Session key cleared.');
       checkHealth();
     });
   }
@@ -345,9 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const headers = { 'Content-Type': 'application/json' };
       const sessionGroq = sessionStorage.getItem('fieldcraft_groq_key');
-      const sessionGemini = sessionStorage.getItem('fieldcraft_gemini_key');
       if (sessionGroq) headers['x-groq-key'] = sessionGroq;
-      if (sessionGemini) headers['x-gemini-key'] = sessionGemini;
 
       const res = await fetch('/api/adventures', {
         method: 'POST',
@@ -425,8 +415,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sourceEl) {
       if (adv.storyModel) {
         sourceEl.textContent = `${adv.storyModel} AI`;
-      } else if (adv.storySource === 'gemini') {
-        sourceEl.textContent = 'Google Gemini AI';
       } else if (adv.storySource === 'gemma') {
         sourceEl.textContent = 'Gemma AI';
       } else {

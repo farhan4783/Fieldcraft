@@ -30,12 +30,12 @@ REQUIRED JSON FORMAT:
 }`;
 
 /**
- * Generate story using available AI (Groq Gemma, Gemini, OpenRouter, or Ollama), with 1 repair retry and deterministic fallback.
+ * Generate story using open-weight Gemma (Local Ollama or Remote Open-Weights), with 1 repair retry and deterministic fallback.
  * @param {Array<object>} checkpoints - Array of selected checkpoints
  * @param {string} tone - 'mystery', 'wonder', or 'playful'
  * @param {number} durationMinutes
  * @param {object} customAiOpts - Optional client-supplied AI options
- * @returns {Promise<{story: object, source: 'gemma' | 'gemini' | 'template-fallback', model?: string}>}
+ * @returns {Promise<{story: object, source: 'gemma' | 'template-fallback', model?: string}>}
  */
 async function generateStory(checkpoints, tone = 'mystery', durationMinutes = 20, customAiOpts = {}) {
   // If checkpoints are empty, fallback immediately
@@ -66,10 +66,9 @@ Ensure every checkpointId matches exactly. Output pure JSON.`;
     const parsed = JSON.parse(cleaned);
     const validated = validateStorySchema(parsed, checkpoints);
 
-    const sourceName = aiResult.provider === 'gemini' ? 'gemini' : 'gemma';
     return {
       story: validated,
-      source: sourceName,
+      source: 'gemma',
       model: aiResult.model,
     };
   } catch (err) {
@@ -87,10 +86,9 @@ Tone: ${tone}. Remember: exact IDs, strict JSON only.`;
       const repairParsed = JSON.parse(repairCleaned);
       const repairValidated = validateStorySchema(repairParsed, checkpoints);
 
-      const sourceName = repairResult.provider === 'gemini' ? 'gemini' : 'gemma';
       return {
         story: repairValidated,
-        source: sourceName,
+        source: 'gemma',
         model: repairResult.model,
       };
     } catch (repairErr) {
