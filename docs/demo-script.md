@@ -22,7 +22,7 @@
 ### Scene 3: AI Proof & Local Privacy (0:20 – 0:32)
 - **Visual:** Brief shot showing terminal / Ollama badge: “🟢 Local Gemma 3 Active”. The Case Briefing card loads with title: *“The Whispering Cartographer”*.
 - **Narration:**  
-  > “Gemma 3 runs completely locally on your device—spinning real public landmarks into a tailored fictional mystery without sending your location to private cloud APIs.”
+  > “Gemma 3 runs locally on your device—spinning real public landmarks into a tailored fictional mystery without sending story prompts to closed commercial AI providers.”
 
 ---
 

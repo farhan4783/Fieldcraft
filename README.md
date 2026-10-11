@@ -11,8 +11,8 @@ Built for the **Hacktoberfest 2026 DEV Challenge — Week 1: “Touch Grass”**
 
 A core requirement of the Hacktoberfest Challenge is demonstrating why **open-source AI and open-weight models** are superior to closed proprietary APIs for the project. For FIELDCRAFT, open-source AI is not an afterthought—it is foundational:
 
-1. **Absolute Location Privacy:**  
-   Outdoor mystery games rely on precise GPS coordinates—revealing where you live, walk, and spend free time. Sending live walking telemetry to commercial cloud AI vendors creates a serious surveillance footprint. With **local open-weight Gemma** running via Ollama, **zero location coordinates ever leave your device**.
+1. **Privacy & Closed-AI Isolation:**  
+   Outdoor mystery games generate custom stories around where players walk and spend free time. Running **local open-weight Gemma** via Ollama ensures that story-generation prompts, landmark lists, and fictional lore are processed entirely on-device and never transmitted to a closed commercial AI provider or used for corporate model training. *(Note: Live adventure creation uses stateless network queries to OpenStreetMap's public Overpass service to discover nearby landmark coordinates, but these coordinates are never logged to disk or stored in any persistent database).*
 2. **Offline & Backcountry Autonomy:**  
    "Touching grass" frequently takes people to nature reserves, dense urban parks, and hiking trails where cellular data drops. A local open-weight model runs entirely offline without network latency, cellular signal, or cloud downtime.
 3. **Zero Marginal Cost & Community Freedom:**  
@@ -128,8 +128,9 @@ npm test
 
 ---
 
-## 📜 Safety & Attribution
+## 📜 Safety, Accessibility & Attribution
 
-- **Safety First:** FIELDCRAFT only selects verified public green spaces, squares, and monuments. It explicitly filters out private property, construction zones, and hazardous tags.
+- **Real-World Access & Physical Limitations:** FIELDCRAFT automatically filters for public amenities (parks, squares, fountains, historic monuments) and excludes private or hazardous tags. However, **OpenStreetMap tags cannot guarantee current real-world public access, opening hours, temporary closures, ongoing maintenance, or physical accessibility (such as wheelchair or step-free access)**. Players must always heed local posted signs, respect private boundaries, and exercise personal discretion and safety.
+- **Pedestrian Safety First:** Never cross roadways, bicycle paths, or rough terrain while looking at your screen. Narration is designed to be heard in headphones so your phone stays put away while walking.
 - **Attribution:** Map data &copy; [OpenStreetMap contributors](https://www.openstreetmap.org/copyright). Narrative generated with open-weight [Gemma](https://ollama.com/library/gemma3) by Google DeepMind.
 - **License:** MIT License.
