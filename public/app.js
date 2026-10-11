@@ -272,9 +272,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCloseAiModal = document.getElementById('btn-close-ai-modal');
   const btnSaveAiKeys = document.getElementById('btn-save-ai-keys');
   const btnClearAiKeys = document.getElementById('btn-clear-ai-keys');
+  const inputOpenRouterKey = document.getElementById('input-openrouter-key');
   const inputGroqKey = document.getElementById('input-groq-key');
 
-  // Load existing key from session
+  // Load existing keys from session
+  if (inputOpenRouterKey) inputOpenRouterKey.value = sessionStorage.getItem('fieldcraft_openrouter_key') || '';
   if (inputGroqKey) inputGroqKey.value = sessionStorage.getItem('fieldcraft_groq_key') || '';
 
   function openAiModal() {
@@ -293,12 +295,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnSaveAiKeys) {
     btnSaveAiKeys.addEventListener('click', () => {
+      const openrouterVal = (inputOpenRouterKey?.value || '').trim();
       const groqVal = (inputGroqKey?.value || '').trim();
+
+      if (openrouterVal) sessionStorage.setItem('fieldcraft_openrouter_key', openrouterVal);
+      else sessionStorage.removeItem('fieldcraft_openrouter_key');
 
       if (groqVal) sessionStorage.setItem('fieldcraft_groq_key', groqVal);
       else sessionStorage.removeItem('fieldcraft_groq_key');
 
-      alert('Gemma AI key saved for this session!');
+      alert('AI keys saved for this session!');
       closeAiModal();
       checkHealth();
     });
@@ -306,9 +312,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnClearAiKeys) {
     btnClearAiKeys.addEventListener('click', () => {
+      sessionStorage.removeItem('fieldcraft_openrouter_key');
       sessionStorage.removeItem('fieldcraft_groq_key');
+      if (inputOpenRouterKey) inputOpenRouterKey.value = '';
       if (inputGroqKey) inputGroqKey.value = '';
-      alert('Session key cleared.');
+      alert('Session keys cleared.');
       checkHealth();
     });
   }
@@ -336,7 +344,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const headers = { 'Content-Type': 'application/json' };
+      const sessionOpenRouter = sessionStorage.getItem('fieldcraft_openrouter_key');
       const sessionGroq = sessionStorage.getItem('fieldcraft_groq_key');
+      if (sessionOpenRouter) headers['x-openrouter-key'] = sessionOpenRouter;
       if (sessionGroq) headers['x-groq-key'] = sessionGroq;
 
       const res = await fetch('/api/adventures', {

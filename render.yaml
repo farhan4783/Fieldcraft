@@ -11,7 +11,9 @@ services:
         value: production
       - key: PORT
         value: 10000
-      - key: GROQ_API_KEY
-        sync: false
       - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: google/gemma-3-4b-it:free
+      - key: GROQ_API_KEY
         sync: false

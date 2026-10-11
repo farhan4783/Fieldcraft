@@ -22,7 +22,7 @@ This guide walks you through deploying **FIELDCRAFT** to [Render](https://render
    - **Build Command:** `npm install`
    - **Start Command:** `node server.js`
 5. Click **Apply**.
-6. (Optional for Hosted Open-Weight AI) Add your free **Groq** API key (`gsk_...`) in the Environment Variables tab to run open-weight **Gemma 2** (`gemma2-9b-it`) in the cloud.
+6. (Recommended for Hosted Open-Weight AI) Add your free **OpenRouter** API key (`sk-or-...`) in the Environment Variables tab to run open-weight **Gemma 3** (`google/gemma-3-4b-it:free`) in the cloud.
 
 ---
 
@@ -50,16 +50,20 @@ Render free instances run in a container with 512MB RAM without GPU, meaning you
 
 For the **Hacktoberfest Open-Source AI Challenge**, FIELDCRAFT provides two compliant deployment paths:
 
-### 1. Free Remote Open-Weight Gemma Runner (Recommended for Cloud)
-You can run Google's open-weight **`gemma2-9b-it`** model for free via Groq's high-speed inference engine:
-1. Go to [https://console.groq.com](https://console.groq.com) and create a free account (no credit card needed).
-2. Click **API Keys** &rarr; **Create API Key**. Copy your key (`gsk_...`).
+### 1. Free Remote Open-Weight Gemma 3 via OpenRouter (Recommended)
+You can run Google's newest open-weight **Gemma 3 4B** (`google/gemma-3-4b-it:free`) via OpenRouter:
+1. Go to [https://openrouter.ai](https://openrouter.ai) and sign up.
+2. Go to **Keys** &rarr; click **Create Key** &rarr; copy your key (`sk-or-...`).
 3. In your Render Dashboard &rarr; Go to your `fieldcraft` service &rarr; Click **Environment**.
-4. Add environment variable:
-   - **Key:** `GROQ_API_KEY`
-   - **Value:** `gsk_your_groq_api_key`
+4. Add environment variables:
+   - **Key:** `OPENROUTER_API_KEY`
+   - **Value:** `sk-or-your_openrouter_api_key`
+   - **Key:** `OPENROUTER_MODEL` *(optional, defaults to this)*
+   - **Value:** `google/gemma-3-4b-it:free`
 5. Click **Save Changes**.
-6. Render will redeploy automatically. FIELDCRAFT will now generate stories using open-weight **`gemma2-9b-it`** at 500+ tokens/second!
+6. Render will redeploy automatically. FIELDCRAFT will now generate stories using open-weight **Gemma 3 4B**!
+
+*(Note: Groq deprecated and retired its older `gemma2-9b-it` model. FIELDCRAFT automatically protects against stale `GROQ_API_KEY` values by prioritizing OpenRouter Gemma 3 and catching retired-model errors gracefully).*
 
 ### 2. Built-in Deterministic Narrative Engine (Zero-Config Failsafe)
 If you deploy without any API keys, FIELDCRAFT automatically runs its procedural **Deterministic Narrative Engine**. It builds custom mysteries from OpenStreetMap landmarks with 0 API calls, 0 RAM overhead, and 100% uptime—allowing judges and reviewers to test the entire game loop seamlessly!
@@ -72,8 +76,9 @@ If you deploy without any API keys, FIELDCRAFT automatically runs its procedural
 |---|---|---|
 | `NODE_ENV` | `production` | Enables production error handling |
 | `PORT` | `10000` | Render assigns this automatically |
-| `GROQ_API_KEY` | `gsk_...` | *(Optional)* Runs open-weight Gemma 2 (`gemma2-9b-it`) |
-| `OPENROUTER_API_KEY` | `sk-or-...` | *(Optional)* Alternative open-weight Gemma runner |
+| `OPENROUTER_API_KEY` | `sk-or-...` | *(Recommended)* Runs open-weight Gemma 3 4B (`google/gemma-3-4b-it:free`) |
+| `OPENROUTER_MODEL` | `google/gemma-3-4b-it:free` | Model identifier on OpenRouter |
+| `GROQ_API_KEY` | `gsk_...` | *(Legacy / Secondary)* Groq runner |
 
 > **Note:** FIELDCRAFT adheres strictly to open-weight models (Google Gemma). Proprietary closed APIs are excluded.
 

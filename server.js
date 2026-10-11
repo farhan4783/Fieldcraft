@@ -41,7 +41,7 @@ if (require.main === module) {
     console.log(`===============================================`);
     console.log(`🌲 FIELDCRAFT Server running at http://0.0.0.0:${config.port}`);
     console.log(`📡 Environment: ${config.nodeEnv}`);
-    console.log(`🤖 AI Engine: Ollama Local Gemma (${config.ollama.baseUrl}) | Remote Gemma (${Boolean(config.ai.groqApiKey)})`);
+    console.log(`🤖 AI Engine: Ollama Local Gemma (${config.ollama.baseUrl}) | OpenRouter (${Boolean(config.ai.openrouterApiKey)}) | Groq (${Boolean(config.ai.groqApiKey)})`);
     console.log(`===============================================`);
   });
 }

@@ -55,8 +55,8 @@ Express Server (Node.js)
   ├─ Bounded Overpass Client (OSM Public POIs)
   ├─ POI Sanitizer & Checkpoint Distance Sorter
   └─ Open-Source AI Engine:
-      ├─ Local Gemma (via Ollama - Primary)
-      ├─ Remote Open-Weight Gemma (Gemma 2 Open Weights)
+      ├─ Local Gemma 3 (via Ollama - Primary)
+      ├─ Remote Open-Weight Gemma 3 (google/gemma-3-4b-it:free via OpenRouter)
       └─ Deterministic Narrative Engine (Built-in Failsafe)
 ```
 
@@ -73,7 +73,7 @@ Express Server (Node.js)
     # Or lightweight for lower-spec machines:
     ollama run gemma3:1b
     ```
-  - **Remote Open-Weights Runner (Zero RAM Overhead):** For low-resource devices or hosted containers, you can set `GROQ_API_KEY=gsk_...` to run open-weight `gemma2-9b-it` at 500+ tokens/sec.
+  - **Remote Open-Weights Gemma 3 (Zero RAM Overhead):** Set `OPENROUTER_API_KEY=sk-or-...` to run open-weight `google/gemma-3-4b-it:free` via OpenRouter.
   - **Built-in Offline Engine (Zero Setup):** If Ollama is not installed and no keys are provided, FIELDCRAFT automatically engages its built-in procedural narrative engine so you can play immediately.
 
 ### 1. Clone & Install

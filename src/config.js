@@ -4,10 +4,10 @@ module.exports = {
   port: parseInt(process.env.PORT, 10) || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
   ai: {
+    openrouterApiKey: process.env.OPENROUTER_API_KEY || '',
+    openrouterModel: process.env.OPENROUTER_MODEL || 'google/gemma-3-4b-it:free',
     groqApiKey: process.env.GROQ_API_KEY || '',
     groqModel: process.env.GROQ_MODEL || 'gemma2-9b-it',
-    openrouterApiKey: process.env.OPENROUTER_API_KEY || '',
-    openrouterModel: process.env.OPENROUTER_MODEL || 'google/gemma-2-9b-it:free',
     timeoutMs: parseInt(process.env.AI_TIMEOUT_MS, 10) || 25000,
   },
   ollama: {

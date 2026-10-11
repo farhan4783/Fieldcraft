@@ -387,12 +387,21 @@
         </div>
 
         <div class="form-group">
+          <label for="input-openrouter-key">
+            <strong>OpenRouter API Key (Recommended for Gemma 3):</strong>
+            <span class="label-tag free">Gemma 3: 4B</span>
+          </label>
+          <input type="password" id="input-openrouter-key" placeholder="sk-or-... (from openrouter.ai/keys)">
+          <small>Runs open-weight <code>google/gemma-3-4b-it:free</code> via OpenRouter in the cloud!</small>
+        </div>
+
+        <div class="form-group">
           <label for="input-groq-key">
-            <strong>Remote Gemma Key (Free Open-Weights Runner):</strong>
-            <span class="label-tag free">100% Free</span>
+            <strong>Groq API Key (Secondary Runner):</strong>
+            <span class="label-tag free">Legacy</span>
           </label>
           <input type="password" id="input-groq-key" placeholder="gsk_... (from console.groq.com)">
-          <small>Runs open-weight <code>gemma2-9b-it</code> in the cloud at 500+ tokens/sec. Zero cost, no credit card required.</small>
+          <small>Secondary runner. (Note: Groq retired older Gemma models; OpenRouter is recommended).</small>
         </div>
 
         <div class="modal-note-box">

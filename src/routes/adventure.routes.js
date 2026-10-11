@@ -65,6 +65,7 @@ router.post('/', async (req, res, next) => {
 
     // Client-supplied AI options (if user entered a key in UI)
     const customAiOpts = {
+      openrouterApiKey: req.headers['x-openrouter-key'] || req.body?.openrouterApiKey,
       groqApiKey: req.headers['x-groq-key'] || req.body?.groqApiKey,
     };
 

@@ -120,3 +120,9 @@ test('GET /api/geocode rejects missing query and handles short query', async () 
   const resShort = await testRequest('/api/geocode?q=a');
   assert.equal(resShort.status, 400);
 });
+
+test('OpenRouter configuration defaults to google/gemma-3-4b-it:free', () => {
+  const config = require('../src/config');
+  assert.equal(config.ai.openrouterModel, 'google/gemma-3-4b-it:free');
+});
+
