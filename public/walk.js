@@ -110,11 +110,12 @@ class WalkEngine {
       activeCp.longitude
     );
 
-    const accuracyThreshold = 60;
+    const accuracyThreshold = 100;
     const arrivalRadius = activeCp.arrivalRadiusMeters || 90;
+    const effectiveAccuracyLimit = distance < 50 ? 130 : accuracyThreshold;
 
     let status = 'searching';
-    if (reading.accuracy > accuracyThreshold) {
+    if (reading.accuracy > effectiveAccuracyLimit) {
       status = 'imprecise';
       this.consecutiveHits = 0;
     } else if (distance <= arrivalRadius) {

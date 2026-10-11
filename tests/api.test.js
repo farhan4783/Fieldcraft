@@ -104,3 +104,19 @@ test('GET /api/pois rejects invalid coordinates', async () => {
   assert.equal(res.status, 400);
   assert.equal(res.data.code, 'INVALID_COORDINATES');
 });
+
+test('GET /api/health returns AI availability and model fields', async () => {
+  const res = await testRequest('/api/health');
+  assert.equal(res.status, 200);
+  assert.ok(typeof res.data.aiProvider === 'string');
+  assert.ok(typeof res.data.aiModel === 'string');
+  assert.ok(typeof res.data.aiAvailable === 'boolean');
+});
+
+test('GET /api/geocode rejects missing query and handles short query', async () => {
+  const resEmpty = await testRequest('/api/geocode');
+  assert.equal(resEmpty.status, 400);
+
+  const resShort = await testRequest('/api/geocode?q=a');
+  assert.equal(resShort.status, 400);
+});

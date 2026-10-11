@@ -1,18 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const config = require('../config');
-const { checkOllamaAvailability } = require('../services/ollama.service');
+const { getAiStatus } = require('../services/ai.service');
 
 router.get('/', async (req, res) => {
-  const ollamaStatus = await checkOllamaAvailability();
+  const aiStatus = await getAiStatus();
 
   res.json({
     ok: true,
     name: config.app.name,
     version: config.app.version,
-    ollamaAvailable: ollamaStatus.available,
-    ollamaVersion: ollamaStatus.version,
-    modelConfigured: config.ollama.model,
+    aiAvailable: aiStatus.available,
+    aiProvider: aiStatus.provider,
+    aiModel: aiStatus.model,
+    aiLabel: aiStatus.label,
+    ollamaAvailable: aiStatus.provider === 'ollama' && aiStatus.available,
+    ollamaVersion: aiStatus.version || null,
+    modelConfigured: aiStatus.model,
   });
 });
 

@@ -32,9 +32,15 @@
       </div>
     </div>
     <div class="header-actions">
-      <div id="system-status-indicator" class="status-badge" title="Detecting AI status...">
+      <div id="system-status-indicator" class="status-badge" role="button" tabindex="0" title="Click to view AI configuration">
         <span class="status-dot"></span> Checking AI
       </div>
+      <button id="btn-open-ai-modal" class="btn-icon" title="AI Settings / API Key" aria-label="AI Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
       <button id="btn-open-journal" class="btn-icon" title="View Field Journal" aria-label="View Journal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -92,13 +98,56 @@
           </div>
         </div>
 
+        <div class="config-section">
+          <label class="config-label">3. STARTING LOCATION</label>
+          <div class="location-mode-tabs" role="tablist">
+            <button type="button" class="loc-tab selected" id="tab-loc-gps">
+              📍 Current GPS
+            </button>
+            <button type="button" class="loc-tab" id="tab-loc-search">
+              🔍 Search City / Landmark
+            </button>
+          </div>
+
+          <!-- GPS Mode Container -->
+          <div id="loc-panel-gps" class="loc-panel active">
+            <div class="gps-detect-row">
+              <button type="button" id="btn-detect-gps" class="btn btn-glass btn-sm">
+                📡 Detect My Location
+              </button>
+              <span id="gps-preview-badge" class="gps-status-pill searching">Click to acquire GPS</span>
+            </div>
+            <p class="loc-subtext">Uses your browser's GPS or Wi-Fi positioning. If indoors or on desktop, you can also search any city below!</p>
+          </div>
+
+          <!-- Search Mode Container -->
+          <div id="loc-panel-search" class="loc-panel hidden">
+            <div class="search-input-wrapper">
+              <input type="text" id="input-search-location" placeholder="e.g. Central Park, NY or Lodhi Garden, Delhi..." autocomplete="off">
+              <button type="button" id="btn-do-search-location" class="btn btn-primary btn-sm">Search</button>
+            </div>
+            <div class="preset-chips">
+              <span class="preset-label">Quick Presets:</span>
+              <button type="button" class="preset-chip" data-lat="40.785091" data-lon="-73.968285" data-name="Central Park, New York">🗽 Central Park, NY</button>
+              <button type="button" class="preset-chip" data-lat="51.507268" data-lon="-0.165730" data-name="Hyde Park, London">👑 Hyde Park, London</button>
+              <button type="button" class="preset-chip" data-lat="28.5933" data-lon="77.2197" data-name="Lodhi Garden, New Delhi">🕌 Lodhi Garden, Delhi</button>
+              <button type="button" class="preset-chip" data-lat="37.7596" data-lon="-122.4269" data-name="Mission Dolores, SF">🌁 Mission Dolores, SF</button>
+            </div>
+            <div id="search-results-list" class="search-results-dropdown hidden"></div>
+            <div id="selected-location-badge" class="selected-location-card hidden">
+              <span class="sel-loc-name" id="selected-loc-name">Selected Place</span>
+              <span class="sel-loc-coords" id="selected-loc-coords"></span>
+            </div>
+          </div>
+        </div>
+
         <div class="action-stack">
           <button id="btn-create-live" class="btn btn-primary btn-large">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg">
               <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
-            Create My Mystery (Walk Outside)
+            Create My Mystery
           </button>
           <button id="btn-create-demo" class="btn btn-secondary">
             ⚡ Try a Demo (Simulate on Desktop / Review)
@@ -110,7 +159,7 @@
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
-          <span><strong>Local-first privacy:</strong> AI runs locally. Exact location coordinates are never saved, tracked, or sent to commercial AI cloud APIs.</span>
+          <span><strong>Privacy first:</strong> Runs with local Gemma or cloud AI. Exact GPS coordinates are never stored, tracked, or saved in any database.</span>
         </div>
       </div>
     </section>
@@ -321,6 +370,47 @@
       <span>FIELDCRAFT &copy; 2026. Built with local <a href="https://ollama.com/library/gemma3" target="_blank" rel="noopener">Gemma 3</a> &amp; map data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>.</span>
     </div>
   </footer>
+
+  <!-- AI Engine Modal -->
+  <div id="ai-settings-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="ai-modal-title">🤖 AI Engine Setup</h3>
+        <button id="btn-close-ai-modal" class="btn-icon" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          FIELDCRAFT generates customized mysteries using open-weight AI. If Ollama is not installed locally, you can use <strong>free Cloud Gemma via Groq</strong> or <strong>Google Gemini</strong>!
+        </p>
+        <div class="current-ai-badge" id="modal-current-ai-badge">
+          Current Engine: Detecting...
+        </div>
+
+        <div class="form-group">
+          <label for="input-groq-key">
+            <strong>Groq API Key (Recommended for Gemma):</strong>
+            <span class="label-tag free">100% Free</span>
+          </label>
+          <input type="password" id="input-groq-key" placeholder="gsk_... (from console.groq.com)">
+          <small>Runs Google's open-weight <code>gemma2-9b-it</code> in the cloud at 500+ tokens/sec. Takes 30 seconds to get a free key!</small>
+        </div>
+
+        <div class="form-group">
+          <label for="input-gemini-key">
+            <strong>Google Gemini API Key (Alternative):</strong>
+            <span class="label-tag free">Free Tier</span>
+          </label>
+          <input type="password" id="input-gemini-key" placeholder="AIza... (from aistudio.google.com)">
+          <small>Runs Google Gemini Flash directly from Google AI Studio.</small>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btn-save-ai-keys" class="btn btn-primary">Save Key (This Session)</button>
+          <button id="btn-clear-ai-keys" class="btn btn-text btn-danger-text">Clear Saved Key</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="storage.js"></script>

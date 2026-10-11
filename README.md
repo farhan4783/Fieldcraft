@@ -45,34 +45,41 @@ Express Server (Node.js)
 
 ### Prerequisites
 - **Node.js** (v18+ or v24+ recommended)
-- **Ollama** (optional, recommended: `ollama run gemma3:4b` or `gemma3:1b`)
-  - *Note: If Ollama is not installed or offline, FIELDCRAFT automatically engages its built-in deterministic story generator so all functionality and demo modes work 100% out of the box.*
+- **AI Engine (Pick ANY option below):**
+  - **Option A (Cloud Gemma via Groq - Easiest & Free):** Get a free API key at [console.groq.com](https://console.groq.com) and set `GROQ_API_KEY=gsk_...`. Runs `gemma2-9b-it` at 500+ tokens/sec!
+  - **Option B (Google Gemini):** Get a free API key at [aistudio.google.com](https://aistudio.google.com) and set `GEMINI_API_KEY=AIza...`.
+  - **Option C (Local Ollama):** Run `ollama run gemma3:4b` or `gemma3:1b`.
+  - **Option D (Zero-config Offline):** If no keys are provided and Ollama is offline, FIELDCRAFT automatically uses its built-in deterministic story engine.
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/your-username/fieldcraft.git
-cd fieldcraft
+git clone https://github.com/farhan4783/Fieldcraft.git
+cd Fieldcraft
 npm install
 ```
 
-### 2. Configure Environment
+### 2. Configure Environment (Optional)
 ```bash
 cp .env.example .env
 ```
-Default `.env` settings:
-```env
-PORT=3000
-NODE_ENV=development
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=gemma3:4b
-OVERPASS_URL=https://overpass-api.de/api/interpreter
-```
+Add your free `GROQ_API_KEY` or `GEMINI_API_KEY` to `.env` if you want instant cloud AI without local Ollama.
 
 ### 3. Start Application
 ```bash
 npm start
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## ☁️ Deploy Live on Render (1-Click)
+
+FIELDCRAFT is 100% ready to deploy to **Render**:
+1. Connect this repo to [Render](https://dashboard.render.com) using Blueprint ([`render.yaml`](render.yaml)).
+2. Add `GROQ_API_KEY` in Render Environment Variables for cloud Gemma AI.
+3. Your live HTTPS URL gives full mobile browser GPS permissions for outdoor play!
+
+See the complete guide in [**`docs/render-deployment.md`**](docs/render-deployment.md).
 
 ---
 

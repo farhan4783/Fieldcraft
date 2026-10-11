@@ -1,4 +1,4 @@
-const { callOllama } = require('./ollama.service');
+const { callAi } = require('./ai.service');
 const { generateFallbackStory } = require('./fallback-story.service');
 const { validateStorySchema } = require('../validators/story.schema');
 
@@ -30,13 +30,14 @@ REQUIRED JSON FORMAT:
 }`;
 
 /**
- * Generate story using Ollama Gemma, with 1 repair retry and deterministic fallback.
+ * Generate story using available AI (Groq Gemma, Gemini, OpenRouter, or Ollama), with 1 repair retry and deterministic fallback.
  * @param {Array<object>} checkpoints - Array of selected checkpoints
  * @param {string} tone - 'mystery', 'wonder', or 'playful'
  * @param {number} durationMinutes
- * @returns {Promise<{story: object, source: 'gemma' | 'template-fallback'}>}
+ * @param {object} customAiOpts - Optional client-supplied AI options
+ * @returns {Promise<{story: object, source: 'gemma' | 'gemini' | 'template-fallback', model?: string}>}
  */
-async function generateStory(checkpoints, tone = 'mystery', durationMinutes = 20) {
+async function generateStory(checkpoints, tone = 'mystery', durationMinutes = 20, customAiOpts = {}) {
   // If checkpoints are empty, fallback immediately
   if (!checkpoints || checkpoints.length === 0) {
     return {
@@ -60,14 +61,16 @@ ${JSON.stringify(cpDescriptions, null, 2)}
 Ensure every checkpointId matches exactly. Output pure JSON.`;
 
   try {
-    const rawResponse = await callOllama(SYSTEM_PROMPT, userPrompt);
-    const cleaned = cleanJsonString(rawResponse);
+    const aiResult = await callAi(SYSTEM_PROMPT, userPrompt, customAiOpts);
+    const cleaned = cleanJsonString(aiResult.content);
     const parsed = JSON.parse(cleaned);
     const validated = validateStorySchema(parsed, checkpoints);
 
+    const sourceName = aiResult.provider === 'gemini' ? 'gemini' : 'gemma';
     return {
       story: validated,
-      source: 'gemma',
+      source: sourceName,
+      model: aiResult.model,
     };
   } catch (err) {
     // Attempt 1 repair retry if it failed
@@ -79,14 +82,16 @@ Please re-output the EXACT valid JSON structure for these checkpoints:
 ${JSON.stringify(cpDescriptions, null, 2)}
 Tone: ${tone}. Remember: exact IDs, strict JSON only.`;
 
-      const repairRaw = await callOllama(SYSTEM_PROMPT, repairPrompt);
-      const repairCleaned = cleanJsonString(repairRaw);
+      const repairResult = await callAi(SYSTEM_PROMPT, repairPrompt, customAiOpts);
+      const repairCleaned = cleanJsonString(repairResult.content);
       const repairParsed = JSON.parse(repairCleaned);
       const repairValidated = validateStorySchema(repairParsed, checkpoints);
 
+      const sourceName = repairResult.provider === 'gemini' ? 'gemini' : 'gemma';
       return {
         story: repairValidated,
-        source: 'gemma',
+        source: sourceName,
+        model: repairResult.model,
       };
     } catch (repairErr) {
       console.warn(`[Story] Repair failed (${repairErr.message}). Using deterministic fallback.`);

@@ -4,6 +4,7 @@ const path = require('path');
 const config = require('./src/config');
 const healthRoutes = require('./src/routes/health.routes');
 const poiRoutes = require('./src/routes/poi.routes');
+const geocodeRoutes = require('./src/routes/geocode.routes');
 const adventureRoutes = require('./src/routes/adventure.routes');
 const { errorHandler } = require('./src/utils/safe-errors');
 
@@ -20,6 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // API Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/pois', poiRoutes);
+app.use('/api/geocode', geocodeRoutes);
 app.use('/api/adventures', adventureRoutes);
 
 // Fallback route for SPA
@@ -35,11 +37,11 @@ app.use(errorHandler);
 
 // Start server if not imported by test runner
 if (require.main === module) {
-  app.listen(config.port, () => {
+  app.listen(config.port, '0.0.0.0', () => {
     console.log(`===============================================`);
-    console.log(`🌲 FIELDCRAFT Server running at http://localhost:${config.port}`);
-    console.log(`📡 Mode: ${config.nodeEnv}`);
-    console.log(`🤖 Ollama target: ${config.ollama.baseUrl} (${config.ollama.model})`);
+    console.log(`🌲 FIELDCRAFT Server running at http://0.0.0.0:${config.port}`);
+    console.log(`📡 Environment: ${config.nodeEnv}`);
+    console.log(`🤖 AI Engine: Groq (${Boolean(config.ai.groqApiKey)}) | Gemini (${Boolean(config.ai.geminiApiKey)}) | Ollama (${config.ollama.baseUrl})`);
     console.log(`===============================================`);
   });
 }

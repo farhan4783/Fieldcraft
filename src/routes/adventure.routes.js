@@ -26,8 +26,14 @@ router.post('/', async (req, res, next) => {
       }));
     } else {
       try {
-        const rawPois = await fetchOverpassPois(latitude, longitude, 1200);
+        let rawPois = await fetchOverpassPois(latitude, longitude, 1200);
         candidatePois = filterAndNormalizePois(rawPois, latitude, longitude, 1200);
+
+        // Auto-expand radius to 2500m if initial search yielded 0 candidates
+        if (candidatePois.length === 0) {
+          rawPois = await fetchOverpassPois(latitude, longitude, 2500);
+          candidatePois = filterAndNormalizePois(rawPois, latitude, longitude, 2500);
+        }
       } catch (err) {
         console.warn(`[Adventure] Overpass query failed (${err.message}). Offering demo mode option.`);
         throw new AppError(
@@ -40,7 +46,7 @@ router.post('/', async (req, res, next) => {
 
     if (candidatePois.length === 0) {
       throw new AppError(
-        'No suitable public landmarks found near this location. Try exploring with Demo Mode or choosing a larger park/public area.',
+        'No suitable public landmarks (parks, squares, libraries) found within 2.5km. Try searching a nearby city or central park!',
         422,
         'NO_SUITABLE_POIS'
       );
@@ -57,8 +63,14 @@ router.post('/', async (req, res, next) => {
       );
     }
 
-    // Generate story from local Gemma or fallback
-    const { story, source } = await generateStory(selectedCps, tone, durationMinutes);
+    // Client-supplied AI options (if user entered a key in UI)
+    const customAiOpts = {
+      groqApiKey: req.headers['x-groq-key'] || req.body?.groqApiKey,
+      geminiApiKey: req.headers['x-gemini-key'] || req.body?.geminiApiKey,
+    };
+
+    // Generate story from Cloud Gemma, Gemini, Local Ollama, or Fallback
+    const { story, source, model } = await generateStory(selectedCps, tone, durationMinutes, customAiOpts);
 
     // Merge story clues into selected checkpoints
     const mergedCheckpoints = selectedCps.map(cp => {
@@ -96,6 +108,7 @@ router.post('/', async (req, res, next) => {
       checkpoints: mergedCheckpoints,
       finale: story.finale,
       storySource: source,
+      storyModel: model || null,
       createdAt: new Date().toISOString(),
     };
 
